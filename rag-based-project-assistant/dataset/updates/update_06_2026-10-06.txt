@@ -1,0 +1,5 @@
+Date: 2026-10-06
+From: Rahul, Backend Developer
+Type: Status + blocker + schedule risk
+Update:
+OTP login is almost complete, but invalid OTP handling still has an issue. Google login was not part of the original scope. Adding it may require two additional working days. The Sprint 1 deadline may be at risk if Google login is approved.

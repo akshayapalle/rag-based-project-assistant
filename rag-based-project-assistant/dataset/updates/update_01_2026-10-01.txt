@@ -1,0 +1,5 @@
+Date: 2026-10-01
+From: Ananya, Project Manager
+Type: Project kickoff
+Update:
+ShopSphere project has started. Sprint 1 focuses on authentication and product catalog. Initial sprint deadline is October 10, 2026.Done.

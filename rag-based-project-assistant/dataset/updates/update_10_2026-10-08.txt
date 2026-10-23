@@ -1,0 +1,5 @@
+Date: 2026-10-08
+From: Ananya, Project Manager
+Type: Decision
+Update:
+PM approved the Google login change request for implementation. Sprint 1 target is being reassessed because the original deadline may no longer be realistic.

@@ -1,0 +1,5 @@
+Date: 2026-10-02
+From: Acme Retail client meeting
+Type: Client change request
+Update:
+Client requested OTP-based login in addition to password login. PM recorded this as a change request CR001 and asked Rahul to assess implementation effort.

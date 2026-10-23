@@ -1,0 +1,5 @@
+Date: 2026-10-05
+From: Acme Retail client meeting
+Type: Client change request
+Update:
+Client requested Google login as an additional authentication option. This was not included in the original scope. Rahul estimated approximately two additional working days may be required. PM review is pending.

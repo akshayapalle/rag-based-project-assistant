@@ -1,0 +1,5 @@
+Date: 2026-10-04
+From: Priya, QA Engineer
+Type: QA update
+Update:
+Password login testing is completed. During OTP testing preparation, QA identified that invalid OTP handling needs to be verified carefully. Test cases are being prepared.

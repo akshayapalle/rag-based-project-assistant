@@ -1,0 +1,5 @@
+Date: 2026-10-07
+From: Priya, QA Engineer
+Type: Defect update
+Update:
+Invalid OTP handling defect has been reproduced. QA is waiting for the backend fix before completing OTP authentication testing.

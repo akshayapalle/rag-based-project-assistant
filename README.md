@@ -1,89 +1,231 @@
-# ShopSphere – Project Intelligence Dataset
+# RAG-Based Project Assistant
+
+An AI-powered project assistant that combines Retrieval-Augmented Generation (RAG), PostgreSQL, ChromaDB, and Azure OpenAI to answer questions about project documents, status, blockers, deadlines, and change requests.
 
 ## Overview
 
-This directory contains a synthetic project dataset used by the **RAG-Based Project Assistant** to retrieve project information, answer project-related questions, and maintain structured project data.
+Managing project information across meeting notes, Excel workbooks, requirements documents, and team updates can make it difficult to find the latest information.
 
-The dataset represents a sample retail project called ShopSphere and includes meeting notes, project requirements, Excel workbooks, and team updates.
+The RAG-Based Project Assistant brings these sources together to help users retrieve relevant project information and generate context-aware answers. It combines structured project data stored in PostgreSQL with semantic document retrieval through ChromaDB and answer generation using Azure OpenAI.
 
-## Dataset Structure
+## Key Features
+
+- **Retrieval-Augmented Generation (RAG):** Retrieves relevant context before generating answers.
+- **Semantic Search:** Uses ChromaDB and Sentence Transformers to find relevant document content.
+- **Structured Data Integration:** Uses PostgreSQL to store and retrieve project information, including tasks, sprints, team details, and project history.
+- **Excel Data Synchronization:** Synchronizes project data from Excel workbooks into PostgreSQL.
+- **Document Ingestion:** Processes TXT and DOCX files for retrieval.
+- **Incremental Indexing:** Uses SHA-256 content hashing to identify document changes and avoid unnecessary re-indexing.
+- **Automated Dataset Monitoring:** Uses Watchdog to detect file changes and trigger the relevant synchronization or indexing workflow.
+- **Source-Aware Answers:** Provides relevant source filenames to help users trace retrieved information.
+- **Project Query Support:** Answers questions about project updates, blockers, deadlines, and client change requests.
+
+## Technology Stack
+
+| Component | Technology |
+|---|---|
+| Programming language | Python |
+| LLM | Azure OpenAI (GPT-4o-mini deployment) |
+| RAG | Retrieval-Augmented Generation |
+| Vector database | ChromaDB |
+| Embeddings | Sentence Transformers — `all-MiniLM-L6-v2` |
+| Structured database | PostgreSQL |
+| Document formats | TXT, DOCX, XLSX |
+| Excel processing | openpyxl |
+| File monitoring | Watchdog |
+| Environment configuration | python-dotenv |
+
+## Architecture
 
 ```text
-dataset/
-├── meetings/
-│   ├── meeting_01_2026-10-02.docx
-│   └── meeting_02_2026-10-05.docx
-├── project_data/
-│   ├── change_requests.xlsx
-│   ├── project.xlsx
-│   ├── sprints.xlsx
-│   ├── tasks.xlsx
-│   └── team.xlsx
-├── requirements/
-│   ├── client_requirements.docx
-│   └── project_scope.docx
-└── updates/
-    ├── update_01_2026-10-01.txt
-    ├── update_02_2026-10-02.txt
-    └── ...
+Project Documents and Excel Workbooks
+                 |
+                 v
+          Dataset Directory
+                 |
+        +--------+---------+
+        |                  |
+        v                  v
+  TXT / DOCX Files     Excel Workbooks
+        |                  |
+        v                  v
+ Document Processing   PostgreSQL Sync
+        |                  |
+        v                  v
+ Embeddings + ChromaDB  Structured Project Data
+        |                  |
+        +--------+---------+
+                 |
+                 v
+          User Question
+                 |
+                 v
+       Context Retrieval
+       from ChromaDB and
+          PostgreSQL
+                 |
+                 v
+          Azure OpenAI
+                 |
+                 v
+       Context-Aware Answer
+       with Source Filenames
 ```
 
-## Data Categories
+## Project Structure
 
-- **Meetings:** Meeting notes containing project discussions and decisions.
-- **Project data:** Excel workbooks containing project details, team information, sprint information, tasks, and change requests.
-- **Requirements:** Client requirements and project scope documents.
-- **Updates:** Chronological text updates describing project progress, blockers, decisions, and changes.
+```text
+rag-based-project-assistant/
+├── dataset/
+│   ├── meetings/
+│   ├── project_data/
+│   ├── requirements/
+│   └── updates/
+├── .env.example
+├── .gitignore
+├── ai_analysis.py
+├── build_vector_store.py
+├── chunk_documents.py
+├── create_tables.py
+├── document_loader.py
+├── evaluate_copilot.py
+├── evaluate_retrieval.py
+├── ingest_updates.py
+├── load_project_events.py
+├── project_history.py
+├── project_intelligence.py
+├── rag_chat.py
+├── rerank_experiment.py
+├── retrieval_metrics.py
+├── search_documents.py
+├── seed_data.py
+├── sync_excel_to_postgres.py
+├── test_db.py
+├── watch_dataset.py
+└── requirements.txt
+```
 
-## How the Dataset Is Used
 
-The dataset supports two complementary information workflows.
 
-### 1. Structured Project Data
+## Setup and Configuration
 
-Excel workbooks are synchronized with PostgreSQL to maintain structured information about the project, team, sprints, and tasks.
+### Prerequisites
 
-Text updates can also be parsed and stored in PostgreSQL for structured project-history tracking.
+- Python 3.12
+- PostgreSQL
+- Azure OpenAI access and a configured model deployment
+- Required Python packages from `requirements.txt`
 
-### 2. Document Retrieval and Question Answering
+### 1. Clone the repository
 
-Meeting notes, requirements, and supported text documents are processed, split into chunks, converted into embeddings, and stored in ChromaDB.
+```bash
+git clone https://github.com/akshayapalle/rag-based-project-assistant.git
+cd rag-based-project-assistant
+```
 
-When a user asks a question, the assistant retrieves relevant document context and combines it with structured project information from PostgreSQL before generating an answer using Azure OpenAI.
 
-### 3. Incremental Updates
+### 2. Create a virtual environment
 
-The project includes SHA-256 content hashing to identify document changes and Watchdog-based monitoring to detect changes in the dataset and trigger relevant synchronization or indexing workflows.
+```bash
+python -m venv .venv
+```
+
+Activate it on Windows:
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+### 3. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Configure environment variables
+
+Create a local `.env` file using `.env.example` as a template.
+
+Configure the following values:
+
+```dotenv
+# PostgreSQL
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=your_database_name
+DB_USER=postgres
+DB_PASSWORD=your_database_password
+
+# Azure OpenAI
+AOAI_CHAT_ENDPOINT=your_azure_openai_endpoint
+AOAI_CHAT_KEY=your_azure_openai_key
+AOAI_CHAT_DEPLOYMENT=your_deployment_name
+AOAI_API_VERSION_GPT=your_api_version
+```
+
+
+### 5. Prepare the database and dataset
+
+- Create the PostgreSQL database and required tables.
+- Place the approved project documents and Excel workbooks in the appropriate `dataset/` subdirectories.
+- Configure the dataset paths if your local directory structure differs.
+
+Use the relevant database setup, data synchronization, ingestion, and indexing scripts according to their dependencies.
+
+### 6. Build the retrieval index
+
+Run the document-processing and vector-store scripts to load supported documents, generate embeddings, and populate ChromaDB.
+
+For example:
+
+```bash
+python build_vector_store.py
+```
+
+### 7. Run the assistant
+
+Start the question-answering workflow:
+
+```bash
+python rag_chat.py
+```
+
+Run commands from the project root. Refer to the individual scripts for any additional setup or execution requirements.
 
 ## Example Questions
 
-The dataset can be used to answer questions such as:
+The assistant is designed to answer questions such as:
 
+- What is the current OTP login blocker?
+- What changes did the client request?
+- What is the status of the authentication sprint?
+- Which tasks are blocked?
+- What is the deadline for the current sprint?
 - What are the latest project updates?
-- What are the current blockers?
-- Why is the authentication sprint at risk?
-- What change requests did the client submit?
-- What is the status of the OTP login task?
-- Which team member is working on a particular task?
-- Which documents contain information about a specific issue?
+- Which documents contain information about a particular issue?
 
-The quality and accuracy of answers depend on the available dataset, database contents, retrieval results, and model configuration.
+Answers depend on the information available in the dataset and the configured databases and retrieval index.
 
-## Architecture Principles
+## Evaluation
 
-- **PostgreSQL:** Stores current structured project information and selected project-history records.
-- **ChromaDB:** Stores document embeddings for semantic retrieval of historical and contextual information.
-- **Azure OpenAI:** Generates answers using the retrieved context.
-- **Original source files:** Remain available as source records for traceability.
-- **Content hashing and file monitoring:** Help identify and respond to dataset changes.
+The project includes retrieval evaluation and experimentation scripts to assess search performance, including metrics such as Hit Rate and Mean Reciprocal Rank (MRR).
 
-## Dataset Scope and Limitations
+Additional testing can cover answer grounding, source accuracy, incremental indexing, file-monitoring behavior, and consistency between structured data and documents.
 
-This is a synthetic demonstration dataset, not a production project-management database.
+## Security Considerations
 
-The dataset supports project question answering and data synchronization experiments. It does not, by itself, guarantee that every update is automatically approved, that every source is synchronized without errors, or that all AI-generated answers are correct.
+- Keep credentials in a local `.env` file.
+- Exclude `.env`, virtual environments, generated vector databases, and caches from Git.
+- Use only datasets approved for sharing.
+- Do not publish confidential client documents, internal meeting notes, or personal information.
+- Configure database access and Azure credentials securely.
 
-## Privacy and Usage
+## Future Improvements
 
-The dataset is intended for development, testing, and demonstration. Verify that all included files contain only synthetic or otherwise approved information before publishing the repository.
+- Add a web-based user interface.
+- Improve source citations and answer-grounding validation.
+- Expand automated evaluation for retrieval and answer quality.
+- Add support for additional document formats and data sources.
+- Improve monitoring, logging, and error handling.
+
 

@@ -1,44 +1,89 @@
-# ShopSphere – AI Project Intelligence Dataset
+# ShopSphere – Project Intelligence Dataset
 
-This is a synthetic project dataset for building an AI-powered Project Intelligence / Project Copilot system.
+## Overview
 
-## Goal
+This directory contains a synthetic project dataset used by the **RAG-Based Project Assistant** to retrieve project information, answer project-related questions, and maintain structured project data.
 
-The system should reduce manual project-management work by:
-1. Understanding team/client updates.
-2. Extracting structured project changes.
-3. Maintaining current project state.
-4. Keeping historical project knowledge searchable with RAG.
-5. Allowing PM approval before important changes are committed.
-6. Answering questions such as:
-   - What changed this week?
-   - What are the current blockers?
-   - Why is Sprint 1 at risk?
-   - What did the client request?
-   - What changed in authentication?
-   - Who is working on which task?
+The dataset represents a sample retail project called ShopSphere and includes meeting notes, project requirements, Excel workbooks, and team updates.
 
-## Suggested first experiment
+## Dataset Structure
 
-Do NOT start with agents.
+```text
+dataset/
+├── meetings/
+│   ├── meeting_01_2026-10-02.docx
+│   └── meeting_02_2026-10-05.docx
+├── project_data/
+│   ├── change_requests.xlsx
+│   ├── project.xlsx
+│   ├── sprints.xlsx
+│   ├── tasks.xlsx
+│   └── team.xlsx
+├── requirements/
+│   ├── client_requirements.docx
+│   └── project_scope.docx
+└── updates/
+    ├── update_01_2026-10-01.txt
+    ├── update_02_2026-10-02.txt
+    └── ...
+```
 
-First build:
-Documents -> RAG -> Question Answering
+## Data Categories
 
-Then:
-Text update -> LLM structured extraction -> proposed database update
+- **Meetings:** Meeting notes containing project discussions and decisions.
+- **Project data:** Excel workbooks containing project details, team information, sprint information, tasks, and change requests.
+- **Requirements:** Client requirements and project scope documents.
+- **Updates:** Chronological text updates describing project progress, blockers, decisions, and changes.
 
-Then add:
-PM approval -> database update
+## How the Dataset Is Used
 
-Then:
-Voice -> speech-to-text -> same update pipeline
+The dataset supports two complementary information workflows.
 
-Finally evaluate whether AutoGen / Semantic Kernel is useful for orchestration.
+### 1. Structured Project Data
 
-## Important architecture principle
+Excel workbooks are synchronized with PostgreSQL to maintain structured information about the project, team, sprints, and tasks.
 
-- SQL/database = current structured project state.
-- Vector DB/RAG = unstructured historical/contextual knowledge.
-- Original updates should be preserved for audit/history.
-- AI should propose critical changes before committing them.
+Text updates can also be parsed and stored in PostgreSQL for structured project-history tracking.
+
+### 2. Document Retrieval and Question Answering
+
+Meeting notes, requirements, and supported text documents are processed, split into chunks, converted into embeddings, and stored in ChromaDB.
+
+When a user asks a question, the assistant retrieves relevant document context and combines it with structured project information from PostgreSQL before generating an answer using Azure OpenAI.
+
+### 3. Incremental Updates
+
+The project includes SHA-256 content hashing to identify document changes and Watchdog-based monitoring to detect changes in the dataset and trigger relevant synchronization or indexing workflows.
+
+## Example Questions
+
+The dataset can be used to answer questions such as:
+
+- What are the latest project updates?
+- What are the current blockers?
+- Why is the authentication sprint at risk?
+- What change requests did the client submit?
+- What is the status of the OTP login task?
+- Which team member is working on a particular task?
+- Which documents contain information about a specific issue?
+
+The quality and accuracy of answers depend on the available dataset, database contents, retrieval results, and model configuration.
+
+## Architecture Principles
+
+- **PostgreSQL:** Stores current structured project information and selected project-history records.
+- **ChromaDB:** Stores document embeddings for semantic retrieval of historical and contextual information.
+- **Azure OpenAI:** Generates answers using the retrieved context.
+- **Original source files:** Remain available as source records for traceability.
+- **Content hashing and file monitoring:** Help identify and respond to dataset changes.
+
+## Dataset Scope and Limitations
+
+This is a synthetic demonstration dataset, not a production project-management database.
+
+The dataset supports project question answering and data synchronization experiments. It does not, by itself, guarantee that every update is automatically approved, that every source is synchronized without errors, or that all AI-generated answers are correct.
+
+## Privacy and Usage
+
+The dataset is intended for development, testing, and demonstration. Verify that all included files contain only synthetic or otherwise approved information before publishing the repository.
+
